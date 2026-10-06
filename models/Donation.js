@@ -44,7 +44,12 @@ const donationSchema = new mongoose.Schema({
   type: mongoose.Schema.Types.ObjectId,
   ref: 'User', // assuming NGO is also stored in User collection
   default: null
-}
+},
+  volunteerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
+  }
 }, { timestamps: true });
 
 const Donation = mongoose.model('Donation', donationSchema);

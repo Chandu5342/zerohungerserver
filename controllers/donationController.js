@@ -53,10 +53,21 @@ export const getDonationsByDonor = async (req, res) => {
 // ✅ 3. Get All Donations (For NGO Dashboard)
 export const getAllDonations = async (req, res) => {
   try {
-    const donations = await Donation.find().sort({ createdAt: -1 }).populate('donorId', 'name email');
+    const donations = await Donation.find().sort({ createdAt: -1 }).populate('donorId', 'name email').populate('volunteerId', 'name email');
     res.status(200).json(donations);
   } catch (err) {
     res.status(500).json({ message: 'Error fetching all donations', error: err.message });
+  }
+};
+
+// ✅ Get Donations by Volunteer
+export const getDonationsByVolunteer = async (req, res) => {
+  try {
+    const { volunteerId } = req.params;
+    const donations = await Donation.find({ volunteerId, status: { $in: ['Accepted', 'Picked', 'Delivered'] } }).sort({ createdAt: -1 }).populate('donorId', 'name email');
+    res.status(200).json(donations);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching volunteer donations', error: err.message });
   }
 };
 
@@ -121,17 +132,22 @@ export const updateDonationPhotos = async (req, res) => {
 export const acceptDonation = async (req, res) => {
   try {
     const { id } = req.params;
-    const { ngoId } = req.body;
+    const { ngoId, volunteerId } = req.body;
 
     if (!ngoId) {
       return res.status(400).json({ message: 'NGO ID is required to accept donation' });
     }
 
+    const updateData = { status: 'Accepted', acceptedBy: ngoId };
+    if (volunteerId) {
+      updateData.volunteerId = volunteerId;
+    }
+
     const updated = await Donation.findByIdAndUpdate(
       id,
-      { status: 'Accepted', acceptedBy: ngoId },
+      updateData,
       { new: true }
-    );
+    ).populate('donorId', 'name email').populate('volunteerId', 'name email');
 
     if (!updated) {
       return res.status(404).json({ message: 'Donation not found' });

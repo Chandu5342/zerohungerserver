@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
 const verifyToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
@@ -9,9 +9,9 @@ const verifyToken = (req, res, next) => {
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) return res.status(403).json({ message: 'Invalid token' });
-    req.user = user; // { userId, username }
+    req.user = user; // { id, role }
     next();
   });
 };
 
-module.exports = verifyToken;
+export default verifyToken;

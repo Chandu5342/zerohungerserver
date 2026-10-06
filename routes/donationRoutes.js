@@ -3,6 +3,7 @@ import {
   createDonation,
   getDonationsByDonor,
   getAllDonations,
+  getDonationsByVolunteer,
   updateDonationStatus,
   cancelDonation,
   updateDonationPhotos,
@@ -19,6 +20,9 @@ router.get('/donor/:donorId', getDonationsByDonor);
 
 // ✅ Get all donations (for NGO dashboard)
 router.get('/', getAllDonations);
+
+// ✅ Get donations by volunteer
+router.get('/volunteer/:volunteerId', getDonationsByVolunteer);
 
 // ✅ Update donation status (Accepted, Picked, Delivered)
 router.put('/status/:id', updateDonationStatus);

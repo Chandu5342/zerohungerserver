@@ -27,9 +27,16 @@ export const updateVolunteerStatus = async (req, res) => {
       return res.status(400).json({ message: 'Invalid status value' });
     }
 
+    const updateData = { ngoJoinStatus: status };
+    if (status === 'accepted') {
+      updateData.availability = 'available';
+    } else if (status === 'rejected') {
+      updateData.availability = 'offline';
+    }
+
     const volunteer = await User.findByIdAndUpdate(
       volunteerId,
-      { ngoJoinStatus: status },
+      updateData,
       { new: true }
     );
 
